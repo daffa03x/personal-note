@@ -8,19 +8,24 @@ class NoteApp extends React.Component {
     super(props);
     this.state = {
       notes: getInitialData(),
+      search: "",
     };
     this.onDeleteHandler = this.onDeleteHandler.bind(this);
     this.onAddNoteHandler = this.onAddNoteHandler.bind(this);
+    this.onSearchHandler = this.onSearchHandler.bind(this);
   }
+
   onDeleteHandler(id) {
     const notes = this.state.notes.filter((note) => note.id !== id);
     this.setState({ notes });
   }
 
   onAddNoteHandler({ title, body }) {
-    const sortedData = getInitialData().sort((a, b) => b.id - a.id);
-    const latestId = sortedData[0].id;
     this.setState((prevState) => {
+      // Buat salinan notes sebelum diurutkan
+      const sortedNotes = [...prevState.notes].sort((a, b) => b.id - a.id);
+      const latestId = sortedNotes.length > 0 ? sortedNotes[0].id : 0;
+
       return {
         notes: [
           ...prevState.notes,
@@ -36,11 +41,17 @@ class NoteApp extends React.Component {
     });
   }
 
+  onSearchHandler(keyword) {
+    this.setState({ search: keyword });
+  }
+
   render() {
+    // Filter notes berdasarkan kata kunci pencarian
+    const filteredNotes = this.state.notes.filter((note) => note.title.toLowerCase().includes(this.state.search.toLowerCase()));
     return (
       <>
-        <NoteAppHeader />
-        <NoteAppBody notes={this.state.notes} addNote={this.onAddNoteHandler} onDelete={this.onDeleteHandler} />
+        <NoteAppHeader onSearch={this.onSearchHandler} />
+        <NoteAppBody notes={filteredNotes} addNote={this.onAddNoteHandler} onDelete={this.onDeleteHandler} />
       </>
     );
   }

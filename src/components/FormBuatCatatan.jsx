@@ -9,6 +9,7 @@ class FormBuatCatatan extends React.Component {
     this.state = {
       title: "",
       body: "",
+      limit: 50,
     };
 
     this.onTitleChangeEventHandler = this.onTitleChangeEventHandler.bind(this);
@@ -17,11 +18,15 @@ class FormBuatCatatan extends React.Component {
   }
 
   onTitleChangeEventHandler(event) {
-    this.setState(() => {
-      return {
-        title: event.target.value,
-      };
-    });
+    const maxChar = this.state.limit;
+    const input = event.target.value;
+    if (input.length <= maxChar) {
+      this.setState(() => {
+        return {
+          title: input,
+        };
+      });
+    }
   }
 
   onBodyChangeEventHandler(event) {
@@ -37,9 +42,10 @@ class FormBuatCatatan extends React.Component {
     this.props.addNote(this.state);
   }
   render() {
+    const remainingChars = this.state.limit - this.state.title.length;
     return (
       <form onSubmit={this.onSubmitEventHandler}>
-        <p className="note-input__title__char-limit">Sisa karakter: 50</p>
+        <p className="note-input__title__char-limit">Sisa karakter: {remainingChars}</p>
         <input type="text" className="note-input__title" placeholder="Ini adalah judul ..." value={this.state.title} onChange={this.onTitleChangeEventHandler} required />
         <textarea className="note-input__body" placeholder="Tuliskan catatanmu di sini ..." value={this.state.body} onChange={this.onBodyChangeEventHandler} required />
         <ButtonSubmit />
